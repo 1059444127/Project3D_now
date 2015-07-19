@@ -1,5 +1,5 @@
-#ifndef IO_UTIL_H
-#define IO_UTIL_H
+#ifndef IO_UTIL_HPP
+#define IO_UTIL_HPP
 
 #include <QImage>
 #include <opencv2/core/core.hpp>

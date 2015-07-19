@@ -19,7 +19,10 @@ SOURCES += main.cpp\
     VideoInput.cpp \
     io_util.cpp \
     ProjectorWidget.cpp \
-    structured_light.cpp
+    structured_light.cpp \
+    CalibrationDialog.cpp \
+    VideoToGet.cpp \
+    ConProWidget.cpp
 
 HEADERS  += mainwindow.h \
     ImageLabel.hpp \
@@ -28,11 +31,15 @@ HEADERS  += mainwindow.h \
     Okapi32.h \
     io_util.hpp \
     ProjectorWidget.hpp \
-    structured_light.hpp
+    structured_light.hpp \
+    CalibrationDialog.hpp \
+    VideoToGet.hpp \
+    ConProWidget.hpp
 
 
 FORMS    += mainwindow.ui \
-    CaptureDialog.ui
+    CaptureDialog.ui \
+    CalibrationDialog.ui
 INCLUDEPATH+=F:\opencv2.4.4\opencv\release\install\include\
 F:\opencv2.4.4\opencv\release\install\include\opencv\
 F:\opencv2.4.4\opencv\release\install\include\opencv2
@@ -40,3 +47,5 @@ LIBS +=D:\Qt_test\Project02_3D\OKAPI32.lib\
        F:\opencv2.4.4\opencv\release\install\lib\libopencv_core244d.dll.a\
        F:\opencv2.4.4\opencv\release\install\lib\libopencv_highgui244d.dll.a\
        F:\opencv2.4.4\opencv\release\install\lib\libopencv_imgproc244d.dll.a
+
+OTHER_FILES +=

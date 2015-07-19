@@ -27,7 +27,7 @@
      <string>Capture...</string>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>42</x>
@@ -38,14 +38,25 @@
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="ImageLabel" name="camera_image" native="true">
-       <zorder>image_3D</zorder>
-      </widget>
+      <widget class="ImageLabel" name="camera_image" native="true"/>
      </item>
      <item>
       <widget class="ImageLabel" name="image_3D" native="true"/>
      </item>
     </layout>
+   </widget>
+   <widget class="QPushButton" name="calibration_button">
+    <property name="geometry">
+     <rect>
+      <x>578</x>
+      <y>120</y>
+      <width>151</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>calibrate...</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">

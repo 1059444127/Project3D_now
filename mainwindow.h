@@ -12,6 +12,7 @@ public:
     ~MainWindow();
 private slots:
     void on_capture_button_clicked();
+    void on_calibration_button_clicked();
 };
 
 #endif // MAINWINDOW_H
