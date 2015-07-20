@@ -28,8 +28,9 @@ CalibrationDialog::CalibrationDialog(QWidget *parent, Qt::WindowFlags flags):
 
 
     //start video preview
-    _success_open_camera=start_camera();//开启相机预览#####改写
     _success_read_pattern=read_pattern();
+    _success_open_camera=start_camera();//开启相机预览#####改写
+
 
 }
 CalibrationDialog::~CalibrationDialog()
@@ -42,13 +43,18 @@ bool CalibrationDialog::start_camera(void){
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
     QApplication::processEvents();
 
-    _video_toget.start_camera();
+    //_video_toget.start_camera();gang
     //……………………………………………………以下四句写入button按下中
-    //_video_toget.start();
+    //_video_toget.s tart();
     //_video_toget.waitForStart();
+    //connect display signal now that we know it worked
+    _video_toget.start();
+    _video_toget.waitForStart();
+    connect(&_video_toget, SIGNAL(new_image(unsigned char *)), this, SLOT(_on_new_camera_image(unsigned char *)), Qt::DirectConnection);//是不安全的connect，this所指的对象有事件循环，最好槽函数没有事件循环部分，否则信号发送线程无法出来
 
     //connect display signal now that we know it worked
     //connect(&_video_toget, SIGNAL(new_image(unsigned char *)), this, SLOT(_on_new_camera_image(unsigned char *)), Qt::DirectConnection);//是不安全的connect，this所指的对象有事件循环，最好槽函数没有事件循环部分，否则信号发送线程无法出来
+
 
     QApplication::restoreOverrideCursor();
     QApplication::processEvents();
@@ -109,9 +115,9 @@ void CalibrationDialog::on_calibrate_button_clicked()
 
 
         //connect display signal now that we know it worked
-        connect(&_video_toget, SIGNAL(new_image(unsigned char *)), this, SLOT(_on_new_camera_image(unsigned char *)), Qt::DirectConnection);//是不安全的connect，this所指的对象有事件循环，最好槽函数没有事件循环部分，否则信号发送线程无法出来
-        _video_toget.start();
-        _video_toget.waitForStart();
+//        connect(&_video_toget, SIGNAL(new_image(unsigned char *)), this, SLOT(_on_new_camera_image(unsigned char *)), Qt::DirectConnection);//是不安全的connect，this所指的对象有事件循环，最好槽函数没有事件循环部分，否则信号发送线程无法出来
+//        _video_toget.start();
+//        _video_toget.waitForStart();
 
         connect(&_projector, SIGNAL(make_new_image(bool)), &_video_toget, SLOT(get_sign(bool)))/*,Qt::DirectConnection)*/;//将_updata标记传入进来到_video_toget线程中
 
@@ -122,8 +128,8 @@ void CalibrationDialog::on_calibrate_button_clicked()
 
         //timer.start();
     }
-    else
-        return;//……………………………………………………………………………………这里写上close按下的函数；或者对text输出失败的提示
+    //else
+        //return;//……………………………………………………………………………………这里写上close按下的函数；或者对text输出失败的提示
 
 }
 void CalibrationDialog::_on_new_camera_image(unsigned char *lpbuf)

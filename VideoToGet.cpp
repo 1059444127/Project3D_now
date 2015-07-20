@@ -29,9 +29,13 @@ void VideoToGet::run()
 {
     _init = false;
     _stop = false;
-
+    bool success = start_camera();
 
     _init=true;
+    if (!success)
+    {
+        return;
+    }
 
 
     LPBYTE	lpbuf;
