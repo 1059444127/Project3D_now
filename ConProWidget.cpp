@@ -10,13 +10,15 @@
 #include <iostream>
 #include <assert.h>
 
+#include "io_util.hpp"
+
 #include "structured_light.hpp"
 
 ConProWidget::ConProWidget(QWidget * parent, Qt::WindowFlags flags) :
     QWidget(parent, flags),
     _screen(0),
     _current_pattern(-1),
-    _pattern_count(4),
+    _pattern_count(1),//共12张pattern,为了方便，从0开始计数^^^^^^^^^^^^^^^^^^^^^^^^
     _vbits(1),
     _hbits(1),
     _updated(false),
@@ -29,12 +31,26 @@ ConProWidget::~ConProWidget()
     stop();
 }
 
+bool ConProWidget::read_pattern()
+{
+
+    for(int i=1;i<13;i++)
+    {
+        QString str="C:/Users/Administrator/Desktop/111/pattern/calibration_1024/";//文件名字可改，这里是不成熟代码^^^^^^^^^^^^^^^^^^^^^
+        QString num=(QString("%1").arg(i));
+        str=str+num+".jpg";
+        patterns.push_back(cv::imread(str.toStdString()));
+    }
+    if (patterns.empty()||patterns.size()!=12)
+        return false;
+    return true;
+}
 void ConProWidget::reset(void)
 {
     _current_pattern = -1;//设置计数为-1
     _updated = false;
     _pixmap = QPixmap();
-    emit new_image(_pixmap);
+    //emit make_new_image(_pixmap);
 }
 
 void ConProWidget::start(void)
@@ -57,7 +73,7 @@ void ConProWidget::start(void)
     showFullScreen();//让此widget全屏显示（有show的功能，最开始ConProWidget是不显示的）
 
     //update bit count for the current resolution
-    update_pattern_bit_count();
+    //update_pattern_bit_count();
 }
 
 void ConProWidget::stop(void)
@@ -104,7 +120,7 @@ void ConProWidget::next(void)
 
 bool ConProWidget::finished(void)
 {
-    return (_current_pattern+2 > 2+4*_pattern_count);
+    return (_current_pattern > _pattern_count);
 }
 
 void ConProWidget::paintEvent(QPaintEvent *)
@@ -122,7 +138,8 @@ void ConProWidget::paintEvent(QPaintEvent *)
         if (_pixmap.isNull())
         {   //update
             updated = true;
-            make_pattern();//产生新的投影图案
+            _pixmap = QPixmap::fromImage(io_util::qImage(patterns.at(_current_pattern)));////////////////将图片序列中提取图案
+            //make_pattern();//产生新的投影图案
         }
 
         //draw
@@ -137,164 +154,12 @@ void ConProWidget::paintEvent(QPaintEvent *)
 
 
 
-        if (updated)
+        if (updated)//意义是产生了新的投影图案
         {   //notfy update
-            _updated = true;
-            emit new_image(_pixmap);//发射信号，使imagelabel的图像更新为新一张要投影的图案
+            _updated = true;//产生新的pattern，且被投影出来,标记为_updated
+            emit make_new_image(_updated);//发射信号，使imagelabel的图像更新为新一张要投影的图案
         }
     }
 }
 
-void ConProWidget::update_pattern_bit_count(void)
-{
-    int cols = width();
-    int rows = height();
 
-    //search bit number
-    _vbits = 1;
-    _hbits = 1;
-    for (int i=(1<<_vbits); i<cols; i=(1<<_vbits)) { _vbits++; }//屏幕width的像素数所需要_vbits个数个比特才能表示出来eg.512*512图片，_vbits=9
-    for (int i=(1<<_hbits); i<rows; i=(1<<_hbits)) { _hbits++; }
-    _pattern_count = std::min(std::min(_vbits, _hbits), _pattern_count);//需要投影的图案的数量要根据屏幕的分辨率来权衡，取最小值
-    std::cerr << " vbits " << _vbits << " / cols="<<cols<<", mvalue="<< ((1<<_vbits)-1) << std::endl;//最大值为512-1=511
-    std::cerr << " hbits " << _hbits << " / rows="<<rows<<", mvalue="<< ((1<<_hbits)-1) << std::endl;
-    std::cerr << " pattern_count="<< _pattern_count << std::endl; //投影图案的数目
-}
-
-void ConProWidget::make_pattern(void)
-{
-    int cols = width();
-    int rows = height();
-
-    /*
-    if (_current_pattern<1)
-    {   //search bit number
-        _vbits = 1;
-        _hbits = 1;
-        for (int i=(1<<_vbits); i<cols; i=(1<<_vbits)) { _vbits++; }
-        for (int i=(1<<_hbits); i<rows; i=(1<<_hbits)) { _hbits++; }
-        _pattern_count = std::min(std::min(_vbits, _hbits), _pattern_count);
-        std::cerr << " vbits " << _vbits << " / cols="<<cols<<", mvalue="<< ((1<<_vbits)-1) << std::endl;
-        std::cerr << " hbits " << _hbits << " / rows="<<rows<<", mvalue="<< ((1<<_hbits)-1) << std::endl;
-        std::cerr << " pattern_count="<< _pattern_count << std::endl;
-    }
-    */
-
-    int vmask = 0, voffset = ((1<<_vbits)-cols)/2, hmask = 0, hoffset = ((1<<_hbits)-rows)/2, inverted = (_current_pattern%2)==0;
-
-    // patterns
-    // -----------
-    // 00 white
-    // 01 black
-    // -----------
-    // 02 vertical, bit N-0, normal
-    // 03 vertical, bit N-0, inverted
-    // 04 vertical, bit N-1, normal
-    // 04 vertical, bit N-2, inverted
-    // ..
-    // XX =  (2*_pattern_count + 2) - 2 vertical, bit N, normal
-    // XX =  (2*_pattern_count + 2) - 1 vertical, bit N, inverted
-    // -----------
-    // 2+N+00 = 2*(_pattern_count + 2) horizontal, bit N-0, normal
-    // 2+N+01 horizontal, bit N-0, inverted
-    // ..
-    // YY =  (4*_pattern_count + 2) - 2 horizontal, bit N, normal
-    // YY =  (4*_pattern_count + 2) - 1 horizontal, bit N, inverted
-
-    if (_current_pattern<2)
-    {   //white or black
-        _pixmap = make_pattern(rows, cols, vmask, voffset, hmask, hoffset, inverted);
-    }
-    else if (_current_pattern<2*_pattern_count+2)//垂直条纹
-    {   //vertical
-        int bit = _vbits - _current_pattern/2;//eg._vbits=11;bit=10,9,8,7,,,,,,,1
-        vmask = 1<<bit;//产生掩码,1024,512,256,,,,2
-        //std::cerr << "v# cp: " << _current_pattern << " bit:" << bit << " mask:" << vmask << std::endl;
-        _pixmap = make_pattern(rows, cols, vmask, voffset, hmask, hoffset, !inverted);//产生垂直编码的图像
-    }
-    else if (_current_pattern<4*_pattern_count+2)//水平条纹
-    {   //horizontal
-        int bit = _hbits + _pattern_count - _current_pattern/2;
-        hmask = 1<<bit;
-        //std::cerr << "h# cp: " << _current_pattern << " bit:" << bit << " mask:" << hmask << std::endl;
-        _pixmap = make_pattern(rows, cols, vmask, voffset, hmask, hoffset, !inverted);//产生水平编码的图像
-    }
-    else
-    {   //error
-        assert(false);
-        stop();
-        return;
-    }
-    // _i++;
-     //QString ii=(QString("[%1]").arg(_i));
-     //QString str="C:/Users/Administrator/Desktop/111/1"+ii+".jpg";
-
-     //_pixmap.save(str);
-
-    //_pixmap.save(QString("pat_%1.png").arg(_current_pattern, 2, 10, QLatin1Char('0')));
-}
-
-QPixmap ConProWidget::make_pattern(int rows, int cols, int vmask, int voffset, int hmask, int hoffset, int inverted)
-{
-    QImage image(cols, rows, QImage::Format_ARGB32);
-
-    int tvalue = (inverted ? 0 : 255);
-    int fvalue = (inverted ? 255 : 0);
-
-    for (int h=0; h<rows; h++)//#####这里重复了很多次，为了产生投影图案。要改写。要么重写（减少重复次数），要么改写（不懂掩码所用的道理？？）
-    {
-        uchar * row = image.scanLine(h);
-        for (int w=0; w<cols; w++)
-        {
-            uchar * px = row + (4*w);
-            //下面六句话由于没有sl::binaryTOGray函数而暂时注释起来
-            int test = (sl::binaryToGray(h+hoffset) & hmask) + (sl::binaryToGray(w+voffset) & vmask);
-            int value = (test ? tvalue : fvalue);
-
-            px[0] = value; //B
-            px[1] = value; //G
-            px[2] = value; //R
-            px[3] = 0xff;  //A
-        }
-    }
-
-    return QPixmap::fromImage(image);
-}
-
-bool ConProWidget::save_info(QString const& filename) const
-{
-    FILE * fp = fopen(qPrintable(filename), "w");
-    if (!fp)
-    {   //failed
-        std::cerr << "Projector save_info failed, file: " << qPrintable(filename) << std::endl;
-        return false;
-    }
-
-    int cols = width();
-    int rows = height();
-
-    int effective_width = cols;
-    int effective_height = rows;
-
-    int max_vert_value = (1<<std::min(_vbits,_pattern_count));
-    while (effective_width>max_vert_value )
-    {
-        effective_width >>= 1;
-    }
-    int max_horz_value = (1<<std::min(_hbits,_pattern_count));
-    while (effective_height>max_horz_value)
-    {
-        effective_height >>= 1;
-    }
-
-    fprintf(fp, "%u %u\n", effective_width, effective_height);
-
-    fprintf(fp, "\n# width height\n"); //help
-
-    std::cerr << "Saved projetor info: " << qPrintable(filename) << std::endl
-              << " - Effective resolution: " << effective_width << "x" << effective_height << std::endl;
-
-    //close
-    fclose(fp);
-    return true;
-}

@@ -59,16 +59,8 @@ bool CalibrationDialog::start_camera(void){
 bool CalibrationDialog::read_pattern()//^^^^^^^^^^^^^^^^^^^^^^写成打开对话框,读入投影图案
 {
 
-    for(int i=1;i<13;i++)
-    {
-        QString str="C:/Users/Administrator/Desktop/111/pattern/calibration_1024/";//文件名字可改，这里是不成熟代码^^^^^^^^^^^^^^^^^^^^^
-        QString num=(QString("%1").arg(i));
-        str=str+num+".jpg";
-        patterns.push_back(cv::imread(str.toStdString()));
-    }
-    if (patterns.empty()||patterns.size()!=12)
-        return false;
-    return true;
+
+    return _projector.read_pattern();
 
 
 }
@@ -113,21 +105,53 @@ void CalibrationDialog::on_calibrate_button_clicked()
         screen_combo->setEnabled(0);
         //projector_patterns_spin->setEnabled(0);
 
-        connect(&_projector, SIGNAL(new_image(QPixmap)), this, SLOT(_on_new_projector_image(QPixmap)))/*,Qt::DirectConnection)*/;
+
+
+
+        //connect display signal now that we know it worked
+        connect(&_video_toget, SIGNAL(new_image(unsigned char *)), this, SLOT(_on_new_camera_image(unsigned char *)), Qt::DirectConnection);//是不安全的connect，this所指的对象有事件循环，最好槽函数没有事件循环部分，否则信号发送线程无法出来
+        _video_toget.start();
+        _video_toget.waitForStart();
+
+        connect(&_projector, SIGNAL(make_new_image(bool)), &_video_toget, SLOT(get_sign(bool)))/*,Qt::DirectConnection)*/;//将_updata标记传入进来到_video_toget线程中
 
         //open projector
 
         _projector.start();//将widget全屏显示，并且根据此时的屏幕设置bit数###################关键
         _projector.next();//使curren_pattern 为0，显示第一张全白色的投影
 
-
-        _video_toget.start();
-        _video_toget.waitForStart();
-
-    //connect display signal now that we know it worked
-        connect(&_video_toget, SIGNAL(new_image(unsigned char *)), this, SLOT(_on_new_camera_image(unsigned char *)), Qt::DirectConnection);//是不安全的connect，this所指的对象有事件循环，最好槽函数没有事件循环部分，否则信号发送线程无法出来
+        //timer.start();
     }
     else
         return;//……………………………………………………………………………………这里写上close按下的函数；或者对text输出失败的提示
+
+}
+void CalibrationDialog::_on_new_camera_image(unsigned char *lpbuf)
+{
+    //QTime t;
+    //t.start();
+    //qDebug( "%c\n", *lpbuf );
+    //qDebug( "%d\n", timer.elapsed() );
+    int bufnum=0;
+    int row_num=_buf_image.rows;
+    int col_num=_buf_image.cols*_buf_image.channels();//此循环耗时6-7ms
+    for(int j=0;j<row_num;j++){
+        unsigned char * data = _buf_image.ptr<uchar>(j);
+        for(int i=0;i<col_num;i++){
+            data[i]=*(lpbuf+bufnum);
+            bufnum++;
+        }
+    }
+    ////////////////////////////////////////////////…………………………………………………………………………………………………………cv::mat：_buf_image是要去处理的图像；
+    /// 这里在做充足的数据记录之后才能放下一张pattern，&&&&&&在完整版软件中，这里要调用函数传入图片，传入图片这个函数会有一个连接槽，这个槽进行数据计算
+    /// 这里暂时先将图片保存下来；
+    _i++;
+    QString ii=(QString("%1").arg(_i));
+    QString str="C:/Users/Administrator/Desktop/111/pattern/capture_result/"+ii+".jpg";
+    cv::imwrite(str.toStdString(),_buf_image);//写文件耗时45ms
+
+    //投下一张图片
+    _projector.clear_updated();
+    _projector.next();
 
 }

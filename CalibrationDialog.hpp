@@ -21,7 +21,7 @@ public:
     int update_screen_combo(void);
 private slots:
 
-
+    void _on_new_camera_image(unsigned char * lpbuf);
     void on_calibrate_button_clicked();
 
 private:
@@ -33,7 +33,7 @@ private:
     QTime timer;
     bool _success_open_camera;
     bool _success_read_pattern;
-    std::vector<cv::Mat> patterns;
+
 };
 
 

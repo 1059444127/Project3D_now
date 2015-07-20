@@ -36,13 +36,15 @@ private:
 
 
     void stop_camera(void);
+public slots:
+    void get_sign(bool sign);
 
 private:
 
     volatile bool _init;
     volatile bool _stop;
 
-
+    volatile bool _can_capture;
 
     HANDLE hBoard;
     LPBITMAPINFOHEADER	lpbi;

@@ -98,9 +98,9 @@ void CaptureDialog::_on_new_camera_image(unsigned char *lpbuf)//################
     }
     camera_image->setImage(_buf_image);////////////////////////////////////////////////_buf_image是要去处理的图像；
     //qDebug( "%d\n", t.elapsed() );
-    //update();
-    //存储所抓取的每一张图片；不成熟的代码，要改#######################
+    //update();#######################
     _i++;
+    //存储所抓取的每一张图片；不成熟的代码，要改
     QString ii=(QString("[%1]").arg(_i));
     QString str="C:/Users/Administrator/Desktop/111/1"+ii+".jpg";
     //cv::imwrite(str.toStdString(),_buf_image);//写文件耗时45ms
