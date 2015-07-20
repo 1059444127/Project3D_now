@@ -61,11 +61,14 @@ bool CalibrationDialog::read_pattern()//^^^^^^^^^^^^^^^^^^^^^^写成打开对话
 
     for(int i=1;i<13;i++)
     {
-        QString str="C:/Users/Administrator/Desktop/111/pattern/calibration_1024/";
+        QString str="C:/Users/Administrator/Desktop/111/pattern/calibration_1024/";//文件名字可改，这里是不成熟代码^^^^^^^^^^^^^^^^^^^^^
         QString num=(QString("%1").arg(i));
         str=str+num+".jpg";
         patterns.push_back(cv::imread(str.toStdString()));
     }
+    if (patterns.empty()||patterns.size()!=12)
+        return false;
+    return true;
 
 
 }
@@ -113,7 +116,7 @@ void CalibrationDialog::on_calibrate_button_clicked()
         connect(&_projector, SIGNAL(new_image(QPixmap)), this, SLOT(_on_new_projector_image(QPixmap)))/*,Qt::DirectConnection)*/;
 
         //open projector
-        //_projector.set_pattern_count(10);//^^^^^^^^^^^^^^^^^^^^^^这里只用到10个pattern
+
         _projector.start();//将widget全屏显示，并且根据此时的屏幕设置bit数###################关键
         _projector.next();//使curren_pattern 为0，显示第一张全白色的投影
 
