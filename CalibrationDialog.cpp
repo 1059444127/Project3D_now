@@ -17,7 +17,6 @@ CalibrationDialog::CalibrationDialog(QWidget *parent, Qt::WindowFlags flags):
 {
     setupUi(this);
 
-    //projector_patterns_spin->setValue(10);
     update_screen_combo();//更新所用的屏幕为哪一个，是配置文件保存的，还是所选的
     //update projector view
     _projector.set_screen(screen_combo->currentIndex());//设置要投影在第几屏幕,设置_screen变量的值（索引值：0 or 1 or 2 ...）
@@ -43,17 +42,10 @@ bool CalibrationDialog::start_camera(void){
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
     QApplication::processEvents();
 
-    //_video_toget.start_camera();gang
-    //……………………………………………………以下四句写入button按下中
-    //_video_toget.s tart();
-    //_video_toget.waitForStart();
-    //connect display signal now that we know it worked
+
     _video_toget.start();
     _video_toget.waitForStart();
     connect(&_video_toget, SIGNAL(new_image(unsigned char *)), this, SLOT(_on_new_camera_image(unsigned char *)), Qt::DirectConnection);//是不安全的connect，this所指的对象有事件循环，最好槽函数没有事件循环部分，否则信号发送线程无法出来
-
-    //connect display signal now that we know it worked
-    //connect(&_video_toget, SIGNAL(new_image(unsigned char *)), this, SLOT(_on_new_camera_image(unsigned char *)), Qt::DirectConnection);//是不安全的connect，this所指的对象有事件循环，最好槽函数没有事件循环部分，否则信号发送线程无法出来
 
 
     QApplication::restoreOverrideCursor();
@@ -111,14 +103,6 @@ void CalibrationDialog::on_calibrate_button_clicked()
         screen_combo->setEnabled(0);
         //projector_patterns_spin->setEnabled(0);
 
-
-
-
-        //connect display signal now that we know it worked
-//        connect(&_video_toget, SIGNAL(new_image(unsigned char *)), this, SLOT(_on_new_camera_image(unsigned char *)), Qt::DirectConnection);//是不安全的connect，this所指的对象有事件循环，最好槽函数没有事件循环部分，否则信号发送线程无法出来
-//        _video_toget.start();
-//        _video_toget.waitForStart();
-
         connect(&_projector, SIGNAL(make_new_image(bool)), &_video_toget, SLOT(get_sign(bool)))/*,Qt::DirectConnection)*/;//将_updata标记传入进来到_video_toget线程中
 
         //open projector
@@ -126,7 +110,7 @@ void CalibrationDialog::on_calibrate_button_clicked()
         _projector.start();//将widget全屏显示，并且根据此时的屏幕设置bit数###################关键
         _projector.next();//使curren_pattern 为0，显示第一张全白色的投影
 
-        //timer.start();
+        timer.start();
     }
     //else
         //return;//……………………………………………………………………………………这里写上close按下的函数；或者对text输出失败的提示
@@ -137,7 +121,7 @@ void CalibrationDialog::_on_new_camera_image(unsigned char *lpbuf)
     //QTime t;
     //t.start();
     //qDebug( "%c\n", *lpbuf );
-    //qDebug( "%d\n", timer.elapsed() );
+    qDebug( "%d\n", timer.elapsed() );
     int bufnum=0;
     int row_num=_buf_image.rows;
     int col_num=_buf_image.cols*_buf_image.channels();//此循环耗时6-7ms
@@ -159,5 +143,20 @@ void CalibrationDialog::_on_new_camera_image(unsigned char *lpbuf)
     //投下一张图片
     _projector.clear_updated();
     _projector.next();
+
+}
+
+void CalibrationDialog::on_close_button_clicked()
+{
+    //close projector
+    _projector.stop();
+    //disconnect projector display signal
+    disconnect(&_projector, SIGNAL(make_new_image(bool)), &_video_toget, SLOT(get_sign(bool)));
+    if (_video_toget.isRunning())//#############需要完善
+    {
+        _video_toget.stop();//#############需要完善
+        _video_toget.wait();//#############需要完善****************加了这句，在单机close时不会出现程序异常终止************
+    }//#############需要完善
+    accept();
 
 }

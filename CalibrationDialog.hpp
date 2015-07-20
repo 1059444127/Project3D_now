@@ -24,6 +24,8 @@ private slots:
     void _on_new_camera_image(unsigned char * lpbuf);
     void on_calibrate_button_clicked();
 
+    void on_close_button_clicked();
+
 private:
     ConProWidget _projector;
     bool _cancel;

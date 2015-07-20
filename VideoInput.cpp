@@ -107,8 +107,8 @@ bool VideoInput::start_camera(void)//打开相机
     hBoard=okOpenBoard(&lIndex);
     if(hBoard==0)
     return 0;
-    lpbi=(LPBITMAPINFOHEADER)GlobalAlloc(GPTR,768*576*10+5120);//用来后期操作buffer，创建合理的内存空间去复制buffer；or用opencv去取出buffer
-    lpdib=(LPBYTE)lpbi+5120;
+    //lpbi=(LPBITMAPINFOHEADER)GlobalAlloc(GPTR,768*576*10+5120);//用来后期操作buffer，创建合理的内存空间去复制buffer；or用opencv去取出buffer
+    //lpdib=(LPBYTE)lpbi+5120;
     LONG form=okSetCaptureParam(hBoard,CAPTURE_BUFRGBFORMAT,FORM_RGB888);
     if(HIWORD(form)==24&&LOWORD(form)==1)//用来检验设置存储图像到缓存的格式是否正确
         return 1;

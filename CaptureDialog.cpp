@@ -16,9 +16,9 @@ CaptureDialog::CaptureDialog(QWidget * parent, Qt::WindowFlags flags):
 {
     setupUi(this);
     //部件设为不可见
-    current_message_label->setVisible(false);
-    progress_label->setVisible(false);
-    progress_bar->setVisible(false);
+    //current_message_label->setVisible(false);
+    //progress_label->setVisible(false);
+   // progress_bar->setVisible(false);
     //test buttons
     test_prev_button->setEnabled(false);
     test_next_button->setEnabled(false);
@@ -32,6 +32,7 @@ CaptureDialog::CaptureDialog(QWidget * parent, Qt::WindowFlags flags):
     //初始化buf对应的image大小；可修改#######这里采集图片的大小是768*576
     _buf_image=cv::Mat(576,768,CV_8UC3);
 
+    imagesize_label->setText("768*576");
 
 
     //start video preview
@@ -99,10 +100,10 @@ void CaptureDialog::_on_new_camera_image(unsigned char *lpbuf)//################
     camera_image->setImage(_buf_image);////////////////////////////////////////////////_buf_image是要去处理的图像；
     //qDebug( "%d\n", t.elapsed() );
     //update();#######################
-    _i++;
+    //_i++;
     //存储所抓取的每一张图片；不成熟的代码，要改
-    QString ii=(QString("[%1]").arg(_i));
-    QString str="C:/Users/Administrator/Desktop/111/1"+ii+".jpg";
+   // QString ii=(QString("[%1]").arg(_i));
+    //QString str="C:/Users/Administrator/Desktop/111/1"+ii+".jpg";
     //cv::imwrite(str.toStdString(),_buf_image);//写文件耗时45ms
 
     //1)加了一段延时函数之后绘制图像流畅；延时50ms######
@@ -126,7 +127,7 @@ void CaptureDialog::on_test_check_stateChanged(int state)
     bool checked = (state==Qt::Checked);
     test_prev_button->setEnabled(checked);
     test_next_button->setEnabled(checked);
-    capture_button->setEnabled(!checked);
+    //capture_button->setEnabled(!checked);
     screen_combo->setEnabled(!checked);
     projector_patterns_spin->setEnabled(!checked);
 
@@ -134,6 +135,7 @@ void CaptureDialog::on_test_check_stateChanged(int state)
     {   //start preview
 
         //connect projector display signal
+
         connect(&_projector, SIGNAL(new_image(QPixmap)), this, SLOT(_on_new_projector_image(QPixmap)))/*,Qt::DirectConnection)*/;
 
         //open projector
@@ -204,14 +206,14 @@ int CaptureDialog::update_screen_combo(void)//更新投影仪屏幕分辨率的�
     return screen_combo->count();//返回屏幕的个数（总数）
 }
 
-void CaptureDialog::on_test_prev_button_clicked(bool checked)
+void CaptureDialog::on_test_prev_button_clicked()
 {
     _projector.clear_updated();//先设置产生新投影的标记为false(_updata=false)
     _projector.prev();//在其中会检查_updata是否为true来验证是否产生新的投影，然后再会调用updata()来重绘witdeg
 
 }
 
-void CaptureDialog::on_test_next_button_clicked(bool checked)
+void CaptureDialog::on_test_next_button_clicked()
 {
     _projector.clear_updated();
     _projector.next();

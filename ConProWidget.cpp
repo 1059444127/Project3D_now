@@ -120,7 +120,7 @@ void ConProWidget::next(void)
 
 bool ConProWidget::finished(void)
 {
-    return (_current_pattern >= _pattern_count);
+    return (_current_pattern >= _pattern_count);////////////////////////问题在这里
 }
 
 void ConProWidget::paintEvent(QPaintEvent *)

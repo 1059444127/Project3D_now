@@ -28,9 +28,9 @@ private slots:
     void on_test_check_stateChanged(int arg1);
 
 
-    void on_test_prev_button_clicked(bool checked);
+    void on_test_prev_button_clicked();
 
-    void on_test_next_button_clicked(bool checked);
+    void on_test_next_button_clicked();
 
 public slots:
     void on_screen_combo_currentIndexChanged(int index);
