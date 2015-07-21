@@ -19,6 +19,8 @@ public:
     bool start_camera(void);
     bool read_pattern(void);
     int update_screen_combo(void);
+private:
+    void save_picture(unsigned char *lpbuf);
 private slots:
 
     void _on_new_camera_image(unsigned char * lpbuf);

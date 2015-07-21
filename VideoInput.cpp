@@ -23,7 +23,7 @@ VideoInput::VideoInput(QObject  * parent):
 
 VideoInput::~VideoInput()
 {
-    //stop_camera();
+    stop_camera();
 }
 
 void VideoInput::run()
@@ -131,4 +131,7 @@ void VideoInput::waitForStart(void)
 void VideoInput::stop_camera()//#############需要完善
 {
     _stop=true;//#############需要完善
+    okStopCapture(hBoard);//关闭图像采集卡
+    okCloseBoard(hBoard);
+
 }

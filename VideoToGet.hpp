@@ -9,6 +9,8 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+#include<QTime>
+
 class VideoToGet : public QThread
 {
     Q_OBJECT
@@ -17,7 +19,10 @@ public:
     VideoToGet(QObject * parent = 0);
     ~VideoToGet();
 
-    inline void stop(void) {_stop = true;}
+    inline void stop(void) {
+
+        _stop = true;}
+
 
     bool start_camera(void);
 
@@ -50,7 +55,7 @@ private:
     LPBITMAPINFOHEADER	lpbi;
     LPBYTE				lpdib;
   //  BLOCKINFO	blk;
-
+    QTime timer;
 
 
 };

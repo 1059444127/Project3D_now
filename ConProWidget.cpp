@@ -10,6 +10,8 @@
 #include <iostream>
 #include <assert.h>
 
+#include<QDebug>
+
 #include "io_util.hpp"
 
 #include "structured_light.hpp"
@@ -18,11 +20,12 @@ ConProWidget::ConProWidget(QWidget * parent, Qt::WindowFlags flags) :
     QWidget(parent, flags),
     _screen(0),
     _current_pattern(-1),
-    _pattern_count(11),//共12张pattern,为了方便，从0开始计数^^^^^^^^^^^^^^^^^^^^^^^^
+    _pattern_count(12),//共12张pattern,为了方便，从0开始计数^^^^^^^^^^^^^^^^^^^^^^^^要改
     _vbits(1),
     _hbits(1),
     _updated(false),
-    _i(0)
+    _i(0),
+    timer()
 {
 }
 
@@ -31,17 +34,17 @@ ConProWidget::~ConProWidget()
     stop();
 }
 
-bool ConProWidget::read_pattern()
+bool ConProWidget::read_pattern()//要改
 {
 
-    for(int i=1;i<13;i++)
+    for(int i=1;i<14;i++)
     {
         QString str="C:/Users/Administrator/Desktop/111/pattern/calibration_1024/";//文件名字可改，这里是不成熟代码^^^^^^^^^^^^^^^^^^^^^
         QString num=(QString("%1").arg(i));
         str=str+num+".jpg";
         patterns.push_back(cv::imread(str.toStdString()));
     }
-    if (patterns.empty()||patterns.size()!=12)
+    if (patterns.empty()||patterns.size()!=13)
         return false;
     return true;
 }
@@ -50,7 +53,7 @@ void ConProWidget::reset(void)
     _current_pattern = -1;//设置计数为-1
     _updated = false;
     _pixmap = QPixmap();
-    //emit make_new_image(_pixmap);
+    //emit make_new_image(_pixmap);可删
 }
 
 void ConProWidget::start(void)
@@ -73,7 +76,7 @@ void ConProWidget::start(void)
     showFullScreen();//让此widget全屏显示（有show的功能，最开始ConProWidget是不显示的）
 
     //update bit count for the current resolution
-    //update_pattern_bit_count();
+    //update_pattern_bit_count();可删
 }
 
 void ConProWidget::stop(void)
@@ -104,18 +107,19 @@ void ConProWidget::next(void)
 {
     if (_updated)
     {   //pattern not processed: wait
-        return;
+        return ;
     }
 
     if (finished())
     {
-        return;
+        return ;
     }
 
     _current_pattern++;//_current_pattern+1
     _pixmap = QPixmap();
     update();//repaint widget???
     QApplication::processEvents();
+    return ;
 }
 
 bool ConProWidget::finished(void)
@@ -145,17 +149,29 @@ void ConProWidget::paintEvent(QPaintEvent *)
         //draw
         QRectF rect = QRectF(QPointF(0,0), QPointF(width(),height()));
         painter.drawPixmap(rect, _pixmap, rect);//将投影图案显示在屏幕上（全屏）
-          //  _pixmap.
-       // _i++;
-        //QString ii=(QString("[%1]").arg(_i));
-        //QString str="C:/Users/Administrator/Desktop/111/1"+ii+".jpg";
+          //  _pixmap.可删
+       // _i++;可删
+        //QString ii=(QString("[%1]").arg(_i));可删
+        //QString str="C:/Users/Administrator/Desktop/111/1"+ii+".jpg";可删
 
-        //_pixmap.save(str);
+        //_pixmap.save(str);可删
 
 
 
         if (updated)//意义是产生了新的投影图案
         {   //notfy update
+
+            timer.start();
+            while (timer.elapsed()<70)//////////////////////////////////////
+            {
+                QApplication::processEvents();
+                //qDebug( "%d\n", t.elapsed() );
+            }
+            //qDebug()<<"projector"<<timer.currentTime();测试从投影触发到相机拍照之间的间隔
+            //QString strname="C:/Users/Administrator/Desktop/111/pattern/capture_result/";可删
+            //int time=timer.currentTime().msecsSinceStartOfDay();可删
+            //QString name=strname+time+".jpg";可删
+            //_pixmap.save(name);可删
             _updated = true;//产生新的pattern，且被投影出来,标记为_updated
             emit make_new_image(_updated);//发射信号，使imagelabel的图像更新为新一张要投影的图案
         }

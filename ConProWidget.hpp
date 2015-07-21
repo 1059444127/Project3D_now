@@ -1,6 +1,7 @@
 #ifndef CONPROWIDGET_HPP
 #define CONPROWIDGET_HPP
 #include <QWidget>
+#include<Qtime>
 #include<opencv2/core/core.hpp>
 #include<opencv2/highgui/highgui.hpp>
 class ConProWidget : public QWidget
@@ -50,8 +51,9 @@ private:
     int _vbits;
     int _hbits;
     volatile bool _updated;//标记，用于检查是否产生新的投影图案
-    int _i;//ceshiyong
+    int _i;//ceshiyong可删
     std::vector<cv::Mat> patterns;
+    QTime timer;//可删
 };
 
 #endif // CONPROWIDGET_HPP

@@ -2,7 +2,7 @@
 #include<QDebug>
 #include <QApplication>
 #include <QMetaType>
-#include <QTime>
+
 
 #include <stdio.h>
 #include <iostream>
@@ -14,7 +14,8 @@ VideoToGet::VideoToGet(QObject  * parent):
     _can_capture(false),
     hBoard(NULL),
     lpbi(NULL),
-    lpdib(NULL)
+    lpdib(NULL),
+    timer()
 
 {
     qRegisterMetaType<cv::Mat>("cv::Mat");
@@ -22,9 +23,8 @@ VideoToGet::VideoToGet(QObject  * parent):
 
 VideoToGet::~VideoToGet()
 {
-    //stop_camera();
+    stop_camera();
 }
-
 void VideoToGet::run()
 {
     _init = false;
@@ -55,6 +55,7 @@ void VideoToGet::run()
     {
         while(_can_capture)
         {
+            qDebug()<<"capture"<<timer.currentTime();
 
             _is_new_picture=okCaptureTo(hBoard,BUFFER,0,0);//第四个参数是0；代表连续采集，即是实时采集，无回调支持
 
@@ -101,7 +102,10 @@ void VideoToGet::waitForStart(void)
 
 void VideoToGet::stop_camera()//#############需要完善…………………………………………………………………………
 {
+
     _stop=true;//#############需要完善关闭图像采集卡………………………………………………………………………………
+    okStopCapture(hBoard);//关闭图像采集卡
+    okCloseBoard(hBoard);
 }
 
 void VideoToGet::get_sign(bool sign)

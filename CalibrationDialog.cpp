@@ -10,8 +10,8 @@ CalibrationDialog::CalibrationDialog(QWidget *parent, Qt::WindowFlags flags):
     _projector(),
     _cancel(false),
     _video_toget(this),
-    _i(0),
-    timer(),
+    _i(0),//可删
+    timer(),//可删
     _success_open_camera(false),
     _success_read_pattern(false)
 {
@@ -28,7 +28,8 @@ CalibrationDialog::CalibrationDialog(QWidget *parent, Qt::WindowFlags flags):
 
     //start video preview
     _success_read_pattern=read_pattern();
-    _success_open_camera=start_camera();//开启相机预览#####改写
+ //   _success_open_camera=start_camera();//开启相机预览#####改写//可删
+     _projector.start();//将widget全屏显示，并且根据此时的屏幕设置bit数###################关键
 
 
 }
@@ -97,6 +98,7 @@ int CalibrationDialog::update_screen_combo(void)//更新投影仪屏幕分辨率
 
 void CalibrationDialog::on_calibrate_button_clicked()
 {
+     _success_open_camera=start_camera();//开启相机预览#####改写
     if(_success_open_camera&&_success_read_pattern)
     {
         //按键设为不可用
@@ -107,17 +109,18 @@ void CalibrationDialog::on_calibrate_button_clicked()
 
         //open projector
 
-        _projector.start();//将widget全屏显示，并且根据此时的屏幕设置bit数###################关键
+  //      _projector.start();//将widget全屏显示，并且根据此时的屏幕设置bit数###################关键可删
         _projector.next();//使curren_pattern 为0，显示第一张全白色的投影
 
         timer.start();
     }
     //else
-        //return;//……………………………………………………………………………………这里写上close按下的函数；或者对text输出失败的提示
+        //return;//……………………………………………………………………………………这里写上close按下的函数；或者对text输出失败的提示//可删
 
 }
-void CalibrationDialog::_on_new_camera_image(unsigned char *lpbuf)
+void CalibrationDialog::_on_new_camera_image(unsigned char *lpbuf)//要改
 {
+/*
     //QTime t;
     //t.start();
     //qDebug( "%c\n", *lpbuf );
@@ -139,10 +142,25 @@ void CalibrationDialog::_on_new_camera_image(unsigned char *lpbuf)
     QString ii=(QString("%1").arg(_i));
     QString str="C:/Users/Administrator/Desktop/111/pattern/capture_result/"+ii+".jpg";
     cv::imwrite(str.toStdString(),_buf_image);//写文件耗时45ms
-
+*/
     //投下一张图片
-    _projector.clear_updated();
-    _projector.next();
+
+//    bool isfinish=false;
+
+ //   if (isfinish)
+  //  {
+//        save_picture(lpbuf);
+
+//    }
+ //   else
+ //   {
+ //       save_picture(lpbuf);
+ //       _projector.clear_updated();
+ //       isfinish=_projector.next();
+ //   }
+      save_picture(lpbuf);
+      _projector.clear_updated();
+      _projector.next();
 
 }
 
@@ -158,5 +176,32 @@ void CalibrationDialog::on_close_button_clicked()
         _video_toget.wait();//#############需要完善****************加了这句，在单机close时不会出现程序异常终止************
     }//#############需要完善
     accept();
+
+}
+
+void CalibrationDialog::save_picture(unsigned char *lpbuf)//要改
+{
+    //QTime t;
+    //t.start();
+    //qDebug( "%c\n", *lpbuf );
+    qDebug( "save_picture_time:%d\n", timer.elapsed() );
+    int bufnum=0;
+    int row_num=_buf_image.rows;
+    int col_num=_buf_image.cols*_buf_image.channels();//此循环耗时6-7ms
+    for(int j=0;j<row_num;j++){
+        unsigned char * data = _buf_image.ptr<uchar>(j);
+        for(int i=0;i<col_num;i++){
+            data[i]=*(lpbuf+bufnum);
+            bufnum++;
+        }
+    }
+    ////////////////////////////////////////////////…………………………………………………………………………………………………………cv::mat：_buf_image是要去处理的图像；
+    /// 这里在做充足的数据记录之后才能放下一张pattern，&&&&&&在完整版软件中，这里要调用函数传入图片，传入图片这个函数会有一个连接槽，这个槽进行数据计算
+    /// 这里暂时先将图片保存下来；
+    _i++;
+    QString ii=(QString("%1").arg(_i));
+    QString str="C:/Users/Administrator/Desktop/111/pattern/capture_result/"+ii+".jpg";
+    cv::imwrite(str.toStdString(),_buf_image);//写文件耗时45ms
+
 
 }
