@@ -22,9 +22,12 @@ SOURCES += main.cpp\
     structured_light.cpp \
     CalibrationDialog.cpp \
     VideoToGet.cpp \
-    ConProWidget.cpp
+    ConProWidget.cpp \
+    Application.cpp \
+    CalibrationData.cpp \
+    scan3d.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS  += \
     ImageLabel.hpp \
     CaptureDialog.hpp \
     VideoInput.hpp \
@@ -34,7 +37,11 @@ HEADERS  += mainwindow.h \
     structured_light.hpp \
     CalibrationDialog.hpp \
     VideoToGet.hpp \
-    ConProWidget.hpp
+    ConProWidget.hpp \
+    Application.hpp \
+    mainwindow.hpp \
+    CalibrationData.hpp \
+    scan3d.hpp
 
 
 FORMS    += mainwindow.ui \
@@ -46,6 +53,7 @@ F:\opencv2.4.4\opencv\release\install\include\opencv2
 LIBS +=D:\Qt_test\Project02_3D\OKAPI32.lib\
        F:\opencv2.4.4\opencv\release\install\lib\libopencv_core244d.dll.a\
        F:\opencv2.4.4\opencv\release\install\lib\libopencv_highgui244d.dll.a\
-       F:\opencv2.4.4\opencv\release\install\lib\libopencv_imgproc244d.dll.a
+       F:\opencv2.4.4\opencv\release\install\lib\libopencv_imgproc244d.dll.a\
+       F:\opencv2.4.4\opencv\release\install\lib\libopencv_calib3d244d.dll.a
 
 OTHER_FILES +=
