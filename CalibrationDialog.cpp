@@ -236,7 +236,7 @@ void CalibrationDialog::save_picture(unsigned char *lpbuf)//要改
             _num_pictrue=0;//计数从零开始
           }
     //将图片存储到本地文件夹中
-    /*
+
     _i++;                                                                              //将图片存储到本地文件夹中
     QString ii=(QString("%1").arg(_i));                                                //将图片存储到本地文件夹中
     QString str="C:/Users/Administrator/Desktop/111/pattern/capture_result/"+ii+".jpg";//将图片存储到本地文件夹中
