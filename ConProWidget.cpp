@@ -39,7 +39,7 @@ bool ConProWidget::read_pattern()//要改
 
     for(int i=1;i<14;i++)
     {
-        QString str="C:/Users/Administrator/Desktop/111/pattern/calibration_1024/";//文件名字可改，这里是不成熟代码^^^^^^^^^^^^^^^^^^^^^
+        QString str="C:/Users/Administrator/Desktop/111/pattern/for_calibration_1024/1024_10bit/";//文件名字可改，这里是不成熟代码^^^^^^^^^^^^^^^^^^^^^
         QString num=(QString("%1").arg(i));
         str=str+num+".jpg";
         patterns.push_back(cv::imread(str.toStdString()));
@@ -162,7 +162,7 @@ void ConProWidget::paintEvent(QPaintEvent *)
         {   //notfy update
 
             timer.start();
-            while (timer.elapsed()<70)//////////////////////////////////////
+            while (timer.elapsed()<80)//////////////////////////////////////
             {
                 QApplication::processEvents();
                 //qDebug( "%d\n", t.elapsed() );

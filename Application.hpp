@@ -34,7 +34,7 @@ public:
 //    bool extract_chessboard_corners(void);
 //    void decode_all(void);
 //    void decode(int level, QWidget * parent_widget = NULL);
-//    void calibrate(void);
+      void calibrate(void);
 
 //    bool decode_gray_set(unsigned level, cv::Mat & pattern_image, cv::Mat & min_max_image, QWidget * parent_widget = NULL) const;
 

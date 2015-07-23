@@ -49,30 +49,92 @@
     </item>
    </layout>
   </widget>
-  <widget class="QPushButton" name="calibrate_button">
+  <widget class="QPushButton" name="synchron_get_button">
    <property name="geometry">
     <rect>
      <x>240</x>
      <y>100</y>
-     <width>93</width>
+     <width>101</width>
      <height>28</height>
     </rect>
    </property>
    <property name="text">
-    <string>calibrate</string>
+    <string>get_picture</string>
    </property>
   </widget>
   <widget class="QPushButton" name="close_button">
    <property name="geometry">
     <rect>
      <x>240</x>
-     <y>200</y>
-     <width>93</width>
+     <y>180</y>
+     <width>101</width>
      <height>28</height>
     </rect>
    </property>
    <property name="text">
     <string>close</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="calibrate_button">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>140</y>
+     <width>101</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>calibration</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="status_label">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>240</y>
+     <width>101</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>processing:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="result_label">
+   <property name="geometry">
+    <rect>
+     <x>110</x>
+     <y>240</y>
+     <width>271</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>dont start</string>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="position_spinBox">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>100</y>
+     <width>46</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="position_label">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>100</y>
+     <width>111</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>position_num:</string>
    </property>
   </widget>
  </widget>

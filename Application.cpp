@@ -41,3 +41,8 @@ Application::Application(int & argc, char ** argv) :
 Application::~Application()
 {
 }
+
+void Application::calibrate(void)//相机标定，投影仪标定，立体标定
+{
+
+}

@@ -251,7 +251,7 @@ void ProjectorWidget::make_pattern(void)
         stop();
         return;
     }
-    // _i++;
+     //_i++;
      //QString ii=(QString("[%1]").arg(_i));
      //QString str="C:/Users/Administrator/Desktop/111/1"+ii+".jpg";
 
