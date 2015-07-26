@@ -227,7 +227,7 @@ void CalibrationDialog::save_picture(unsigned char *lpbuf)//要改
     /// 这里暂时先将图片保存下来；
         _patterns_to_corner.push_back(_buf_image);//存储图像到vector中
 
-        if(_patterns_to_corner.size()==12)//存入图片已满，够12张
+        if(_patterns_to_corner.size()==38)//存入图片已满，够12张
           {
             _sum_pattern_to_corner.push_back(_patterns_to_corner);//压入vector中
             _patterns_to_corner.clear();//清空上一次存储的图片

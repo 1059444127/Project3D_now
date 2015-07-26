@@ -257,7 +257,7 @@ void ProjectorWidget::make_pattern(void)
 
      //_pixmap.save(str);
 
-    //_pixmap.save(QString("pat_%1.png").arg(_current_pattern, 2, 10, QLatin1Char('0')));
+   // _pixmap.save(QString("pat_%1.png").arg(_current_pattern, 2, 10, QLatin1Char('0')));
 }
 
 QPixmap ProjectorWidget::make_pattern(int rows, int cols, int vmask, int voffset, int hmask, int hoffset, int inverted)

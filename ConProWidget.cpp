@@ -20,7 +20,7 @@ ConProWidget::ConProWidget(QWidget * parent, Qt::WindowFlags flags) :
     QWidget(parent, flags),
     _screen(0),
     _current_pattern(-1),
-    _pattern_count(12),//共12张pattern,为了方便，从0开始计数^^^^^^^^^^^^^^^^^^^^^^^^要改
+    _pattern_count(38),//共12张pattern,为了方便，从0开始计数^^^^^^^^^^^^^^^^^^^^^^^^要改
     _vbits(1),
     _hbits(1),
     _updated(false),
@@ -37,14 +37,22 @@ ConProWidget::~ConProWidget()
 bool ConProWidget::read_pattern()//要改
 {
 
-    for(int i=1;i<14;i++)
-    {
-        QString str="C:/Users/Administrator/Desktop/111/pattern/for_calibration_1024/1024_10bit/";//文件名字可改，这里是不成熟代码^^^^^^^^^^^^^^^^^^^^^
-        QString num=(QString("%1").arg(i));
-        str=str+num+".jpg";
-        patterns.push_back(cv::imread(str.toStdString()));
+
+    for(int i=0;i<39;i++){///测试用1->0
+
+        cv::Mat image=cv::imread(QString("D://Qt_test//build-Project02_3D-Desktop_Qt_5_2_1_MinGW_32bit-Debug//9bit2//pat_%1.jpg").arg(i, 2, 10, QLatin1Char('0')).toStdString());
+
+         patterns.push_back(image);
     }
-    if (patterns.empty()||patterns.size()!=13)
+
+//    for(int i=1;i<14;i++)
+//    {
+//        QString str="C:/Users/Administrator/Desktop/111/pattern/for_calibration_1024/1024_10bit/";//文件名字可改，这里是不成熟代码^^^^^^^^^^^^^^^^^^^^^
+//        QString num=(QString("%1").arg(i));
+//        str=str+num+".jpg";
+//        patterns.push_back(cv::imread(str.toStdString()));
+//    }
+    if (patterns.empty()||patterns.size()!=39)
         return false;
     return true;
 }
